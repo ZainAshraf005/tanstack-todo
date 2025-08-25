@@ -1,20 +1,36 @@
 import mongoose from "mongoose";
 
-const MONGO_URI = process.env.MONGO_URI as string;
+// Type for global mongoose cache
+interface MongooseGlobal {
+  mongoose?: {
+    conn: typeof mongoose | null;
+    promise: Promise<typeof mongoose> | null;
+  };
+}
 
+// Extend globalThis with our type
+declare const global: typeof globalThis & MongooseGlobal;
+
+const MONGO_URI = process.env.MONGO_URI as string;
 if (!MONGO_URI) throw new Error("MONGO_URI environment variable is not set");
 
-let cached = (global as any).mongoose;
-
-if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
+// Initialize cached object
+if (!global.mongoose) {
+  global.mongoose = { conn: null, promise: null };
 }
 
 export async function connectDB() {
-  if (cached.conn) return cached.conn;
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGO_URI).then((mongoose) => mongoose);
+  if (global.mongoose && global.mongoose.conn) return global.mongoose.conn;
+
+  if (global.mongoose && !global.mongoose.promise) {
+    global.mongoose.promise = mongoose
+      .connect(MONGO_URI)
+      .then((mongoose) => mongoose);
   }
-  cached.conn = await cached.promise;
-  return cached.conn;
+
+  if (!global.mongoose) {
+    throw new Error("global.mongoose is not initialized");
+  }
+  global.mongoose.conn = await global.mongoose.promise;
+  return global.mongoose.conn;
 }

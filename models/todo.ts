@@ -1,8 +1,7 @@
-import { timeStamp } from "console";
 import { Document, model, models, Schema } from "mongoose";
 
 interface ITodo extends Document {
-  title: String;
+  title: string;
 }
 
 const todoSchema = new Schema<ITodo>(

@@ -44,11 +44,11 @@ function MainPage() {
 
     const lowerSearch = search.toLowerCase();
 
-    const matched = data.todos.filter((todo: any) =>
+    const matched = data.todos.filter((todo: ITodo) =>
       todo.title.toLowerCase().includes(lowerSearch)
     );
     const unmatched = data.todos.filter(
-      (todo: any) => !todo.title.toLowerCase().includes(lowerSearch)
+      (todo: ITodo) => !todo.title.toLowerCase().includes(lowerSearch)
     );
 
     return [...matched, ...unmatched];
@@ -130,7 +130,7 @@ function MainPage() {
             </div>
           ) : (
             <div className="px-7 h-[26rem] overflow-y-scroll scrollbar-hide">
-              {sortedTodos.map((todo: any) => {
+              {sortedTodos.map((todo: ITodo) => {
                 const isMatch = todo.title
                   .toLowerCase()
                   .includes(search.toLowerCase());
